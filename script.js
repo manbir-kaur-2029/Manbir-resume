@@ -519,4 +519,47 @@ alert(
 }
 
 }
+// Fetch Live GitHub Repositories via REST API
+async function loadGitHubRepos() {
+  const reposContainer = document.getElementById("github-repos");
+  if (!reposContainer) return;
+
+  try {
+    const response = await fetch(
+      "https://github.com"
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch GitHub repositories");
+    }
+
+    const repos = await response.json();
+    reposContainer.innerHTML = "";
+
+    repos.forEach((repo) => {
+      const card = document.createElement("div");
+      card.className = "repo-card";
+
+      const language = repo.language || "HTML / CSS";
+      const description = repo.description || "Personal development repository on GitHub.";
+      const updatedDate = new Date(repo.updated_at).toLocaleDateString();
+
+      card.innerHTML = `
+        <h4><a href="${repo.html_url}" target="_blank" rel="noopener noreferrer">${repo.name} ↗</a></h4>
+        <p>${description}</p>
+        <div class="repo-meta">
+          <span class="repo-lang">${language}</span>
+          <span>⭐ ${repo.stargazers_count} • Updated ${updatedDate}</span>
+        </div>
+      `;
+
+      reposContainer.appendChild(card);
+    });
+  } catch (error) {
+    console.error("GitHub API Error:", error);
+    reposContainer.innerHTML = "<p>Unable to load live repositories right now.</p>";
+  }
+}
+
+window.addEventListener("DOMContentLoaded", loadGitHubRepos);
 
